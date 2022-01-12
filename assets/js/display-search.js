@@ -97,10 +97,6 @@ function searchApi(query) {
     })
     .then(function (locRes) {
       resultTextEl.textContent = locRes[0].name;
-      //console.log(locRes[0].name);
-      //console.log(locRes);
-      //console.log(locRes[0].lat);
-      //console.log(locRes[0].lat)
       var locQueryUrlWithCoords = 'https://api.openweathermap.org/data/2.5/onecall?lat=' + locRes[0].lat + '&units=imperial' + '&lon=' + locRes[0].lon + '&appid=eb92979807d48fa0bbcad9370c91beb3';
       fetch(locQueryUrlWithCoords)
         .then(function (response) {
@@ -111,16 +107,9 @@ function searchApi(query) {
         }
         )
         .then(function (locRes1) {
-          //console.log(locRes1);
-          // console.log(locRes1.current.temp);
-          // console.log(locRes1.daily[0].temp.day);
-          // console.log(locRes1.daily[1].temp.day);
-          // console.log(locRes1.daily[2].temp.day);
-          // console.log(locRes1.daily[3].temp.day);
-          // console.log(locRes1.daily[4].temp.day);
           resultContentEl.textContent = '';
 
-          document.getElementById("buttonLocalStorage").addEventListener('submit', handleSearchFormSubmitLocalStorage);
+          document.getElementById("buttonLocalStorage").addEventListener('click', handleSearchFormSubmitLocalStorage);
 
           if (localStorage.getItem("city") !== locRes[0].name) {
             document.getElementById("buttonLocalStorage").style.visibility="visible";
@@ -132,15 +121,6 @@ function searchApi(query) {
           localStorage.setItem("city", locRes[0].name);
         }
           
-
-
-
-
-          
-
-          
-
-
           for (var i = 0; i < locRes1.daily.length; i++) {
             printResults(locRes1.daily[i]);
           }
@@ -174,7 +154,7 @@ function handleSearchFormSubmit(event) {
         event.preventDefault();
 
         // Get user input from the form
-        var searchInputValLocalStorage = localStorage.getItem("city");
+        var searchInputValLocalStorage = document.getElementById("buttonLocalStorage").textContent;
         console.log(searchInputValLocalStorage);
         //var formatInputVal = document.querySelector('#format-input').value;
 
