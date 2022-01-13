@@ -1,92 +1,55 @@
-var resultTextEl = document.querySelector('#result-text');
-var resultContentEl = document.querySelector('#result-content');
-var searchFormEl = document.querySelector('#search-form');
-document.getElementById("buttonLocalStorage").style.visibility="hidden";
-document.getElementById("buttonLocalStorage1").style.visibility="hidden";
+var resultTextEl = document.querySelector("#result-text");
+var resultContentEl = document.querySelector("#result-content");
+var searchFormEl = document.querySelector("#search-form");
+document.getElementById("buttonLocalStorage").style.visibility = "hidden";
+document.getElementById("buttonLocalStorage1").style.visibility = "hidden";
 function getParams() {
-  // Get the search params out of the URL (i.e. `?q=london&format=photo`) and
-  // convert it to an array (i.e. ['?q=london', 'format=photo']). These params
-  // are set in script.js.
-  var searchParamsArr = document.location.search.split('&');
-
-  // Get the query and format values
-  var query = searchParamsArr[0].split('=').pop();
-  //var format = searchParamsArr[1].split('=').pop();
-
+  var searchParamsArr = document.location.search.split("&");
+  var query = searchParamsArr[0].split("=").pop();
   searchApi(query);
 }
-
-
-// Function takes a result object from the api and adds content to the DOM,
-// displaying the results on the page.
 function printResults(resultObj) {
-  //console.log(resultObj);
-
-  // set up `<div>` to hold result content
-  var resultCard = document.createElement('div');
-  resultCard.classList.add('card', 'bg-light', 'text-dark', 'mb-3');
-
-  var resultBody = document.createElement('div');
-  resultBody.classList.add('card-body');
+  var resultCard = document.createElement("div");
+  resultCard.classList.add("card", "bg-light", "text-dark", "mb-3");
+  var resultBody = document.createElement("div");
+  resultBody.classList.add("card-body");
   resultCard.append(resultBody);
-
-  var titleEl = document.createElement('h3');
+  var titleEl = document.createElement("h3");
   titleEl.textContent = "";
-
-  var bodyContentEl = document.createElement('p');
+  var bodyContentEl = document.createElement("p");
   bodyContentEl.innerHTML =
-    '<strong>Temperature:</strong> ' + resultObj.temp.day + "degrees F" + '<br/>';
-
-
-
-
-    if (resultObj.dt) {
-
-
-var dateObject = new Date(resultObj.dt *1000);
-
-var humanDateFormat = dateObject.toLocaleString() //2019-12-9 10:30:15
-//console.log(humanDateFormat);
-      
-
-      bodyContentEl.innerHTML +=
-        '<strong>Date:</strong> ' + humanDateFormat + '<br/>';
-    } else {
-      bodyContentEl.innerHTML +=
-        '<strong>Subjects:</strong> No subject for this entry.';
-    }
-
+    "<strong>Temperature:</strong> " +
+    resultObj.temp.day +
+    "degrees F" +
+    "<br/>";
+  if (resultObj.dt) {
+    var dateObject = new Date(resultObj.dt * 1000);
+    var humanDateFormat = dateObject.toLocaleString(); //2019-12-9 10:30:15
+    bodyContentEl.innerHTML +=
+      "<strong>Date:</strong> " + humanDateFormat + "<br/>";
+  } else {
+    bodyContentEl.innerHTML +=
+      "<strong>Subjects:</strong> No subject for this entry.";
+  }
   if (resultObj.wind_speed) {
     bodyContentEl.innerHTML +=
-      '<strong>Wind:</strong> ' + resultObj.wind_speed + 'mph' + '<br/>';
+      "<strong>Wind:</strong> " + resultObj.wind_speed + "mph" + "<br/>";
   } else {
     bodyContentEl.innerHTML +=
-      '<strong>Subjects:</strong> No subject for this entry.';
+      "<strong>Subjects:</strong> No subject for this entry.";
   }
-
   if (resultObj.humidity) {
     bodyContentEl.innerHTML +=
-      '<strong>Humidity:</strong> ' + resultObj.humidity + '%' + '<br/>';
+      "<strong>Humidity:</strong> " + resultObj.humidity + "%" + "<br/>";
   } else {
     bodyContentEl.innerHTML +=
-      '<strong>Description:</strong>  No description for this entry.';
+      "<strong>Description:</strong>  No description for this entry.";
   }
-
-  // var linkButtonEl = document.createElement('a');
-  // linkButtonEl.textContent = 'Read More';
-  // linkButtonEl.setAttribute('href', resultObj.url);
-  // linkButtonEl.classList.add('btn', 'btn-dark');
-
-  resultBody.append(titleEl, bodyContentEl,);
-
+  resultBody.append(titleEl, bodyContentEl);
   resultContentEl.append(resultCard);
 }
-
-//from api
-//http://api.openweathermap.org/geo/1.0/direct?q=London&limit=5&appid={API key}
-
 function searchApi(query) {
-  var locQueryUrl = 'https://api.openweathermap.org/geo/1.0/direct?q=';
+  var locQueryUrl = "https://api.openweathermap.org/geo/1.0/direct?q=";
   locQueryUrl = locQueryUrl + query + "&appid=eb92979807d48fa0bbcad9370c91beb3";
   fetch(locQueryUrl)
     .then(function (response) {
@@ -97,30 +60,36 @@ function searchApi(query) {
     })
     .then(function (locRes) {
       resultTextEl.textContent = locRes[0].name;
-      var locQueryUrlWithCoords = 'https://api.openweathermap.org/data/2.5/onecall?lat=' + locRes[0].lat + '&units=imperial' + '&lon=' + locRes[0].lon + '&appid=eb92979807d48fa0bbcad9370c91beb3';
+      var locQueryUrlWithCoords =
+        "https://api.openweathermap.org/data/2.5/onecall?lat=" +
+        locRes[0].lat +
+        "&units=imperial" +
+        "&lon=" +
+        locRes[0].lon +
+        "&appid=eb92979807d48fa0bbcad9370c91beb3";
       fetch(locQueryUrlWithCoords)
         .then(function (response) {
           if (!response.ok) {
             throw response.json();
           }
           return response.json();
-        }
-        )
+        })
         .then(function (locRes1) {
-          resultContentEl.textContent = '';
+          resultContentEl.textContent = "";
 
-          document.getElementById("buttonLocalStorage").addEventListener('click', handleSearchFormSubmitLocalStorage);
+          document
+            .getElementById("buttonLocalStorage")
+            .addEventListener("click", handleSearchFormSubmitLocalStorage);
 
           if (localStorage.getItem("city") !== locRes[0].name) {
-            document.getElementById("buttonLocalStorage").style.visibility="visible";
-          document.getElementById("buttonLocalStorage").textContent = localStorage.getItem("city");
-          localStorage.setItem("city", locRes[0].name);
-          //console.log(localStorage.getItem("city"));
-        }
-        else {
-          localStorage.setItem("city", locRes[0].name);
-        }
-          
+            document.getElementById("buttonLocalStorage").style.visibility =
+              "visible";
+            document.getElementById("buttonLocalStorage").textContent =
+              localStorage.getItem("city");
+            localStorage.setItem("city", locRes[0].name);
+          } else {
+            localStorage.setItem("city", locRes[0].name);
+          }
           for (var i = 0; i < locRes1.daily.length; i++) {
             printResults(locRes1.daily[i]);
           }
@@ -128,45 +97,27 @@ function searchApi(query) {
         .catch(function (error) {
           console.error(error);
         });
-    })
-  }
-
-
-// This function is nearly the same as the one in script.js
+    });
+}
 function handleSearchFormSubmit(event) {
-        event.preventDefault();
-
-        // Get user input from the form
-        var searchInputVal = document.querySelector('#search-input').value;
-        //var formatInputVal = document.querySelector('#format-input').value;
-
-        if (!searchInputVal) {
-          console.error('You need a search input value!');
-          return;
-        }
-
-        // Pass intput to searchApi which will fetch data
-        searchApi(searchInputVal);
-      }
-
-
-      function handleSearchFormSubmitLocalStorage(event) {
-        event.preventDefault();
-
-        // Get user input from the form
-        var searchInputValLocalStorage = document.getElementById("buttonLocalStorage").textContent;
-        console.log(searchInputValLocalStorage);
-        //var formatInputVal = document.querySelector('#format-input').value;
-
-        if (!searchInputValLocalStorage) {
-          console.error('You need a search input value!');
-          return;
-        }
-
-        // Pass intput to searchApi which will fetch data
-        searchApi(searchInputValLocalStorage);
-      }
-
-searchFormEl.addEventListener('submit', handleSearchFormSubmit);
-
-  getParams();
+  event.preventDefault();
+  var searchInputVal = document.querySelector("#search-input").value;
+  if (!searchInputVal) {
+    console.error("You need a search input value!");
+    return;
+  }
+  searchApi(searchInputVal);
+}
+function handleSearchFormSubmitLocalStorage(event) {
+  event.preventDefault();
+  var searchInputValLocalStorage =
+    document.getElementById("buttonLocalStorage").textContent;
+  console.log(searchInputValLocalStorage);
+  if (!searchInputValLocalStorage) {
+    console.error("You need a search input value!");
+    return;
+  }
+  searchApi(searchInputValLocalStorage);
+}
+searchFormEl.addEventListener("submit", handleSearchFormSubmit);
+getParams();
